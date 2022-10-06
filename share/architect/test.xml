@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/7.0.0/rti_dds_profiles.xsd" version="7.0.0">
+    <types>
+      <struct name="ture">
+        <member name="name" type="string" key="true"/>
+      </struct>
+    </types>
+
+    <domain_library name="my">
+      <domain name="CombatDomain" domain_id="0">
+        <register_type name="ture" type_ref="ture"/>
+        <topic name="speed" register_type_ref="ture"/>
+      </domain>
+    </domain_library>
+
+    <domain_participant_library name="DomainParticipantLibrary">
+      <domain_participant name="sitpiccomp" domain_ref="my::CombatDomain">
+        <publisher name="NewPublisher1">
+          <!--This is a test project-->
+          <data_writer name="speedWriter" topic_ref="speed"/>
+        </publisher>
+      </domain_participant>
+    </domain_participant_library>
+
+</dds>

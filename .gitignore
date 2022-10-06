@@ -1,0 +1,13 @@
+.clang*
+*.o
+*.a
+*.ali
+*.stderr
+*.stdout 
+*.cswi
+*-loc.xml
+messages.txt
+gpsauto.cgpr
+*.bexch
+b__*
+
