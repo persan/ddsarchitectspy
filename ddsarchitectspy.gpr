@@ -22,7 +22,7 @@ project Ddsarchitectspy is
    end Binder;
 
    package Linker is
-      for Switches ("ada") use ("-g", "-static");
+      for Switches ("ada") use ("-g"); -- , "-static");
    end Linker;
 
 end Ddsarchitectspy;

@@ -4,7 +4,7 @@ with Ada.Unchecked_Conversion;
 with RTIDDS.Low_Level.ndds_dds_c_dds_c_infrastructure_h;
 with RTIDDS.Low_Level.ndds_dds_c_dds_c_infrastructure_impl_h;
 with Ada.Strings.Hash;
-package body DDSArchitectSpy.DDSExtra is
+package body DDSArchitectSpy_DDS is
    use RTIDDS.Low_Level.Ndds_Dds_C_Dds_C_Domain_H;
    use RTIDDS.Low_Level.Ndds_Dds_C_Dds_C_Infrastructure_Impl_H;
    -------------------
@@ -41,4 +41,19 @@ package body DDSArchitectSpy.DDSExtra is
       return Ada.Strings.Hash (S);
    end;
 
-end DDSArchitectSpy.DDSExtra;
+   function Hash (Item : DDS.ParticipantBuiltinTopicData) return Ada.Containers.Hash_Type is
+   begin
+      return Hash (Item.Key);
+   end Hash;
+
+   function Hash (Item : DDS.PublicationBuiltinTopicData) return Ada.Containers.Hash_Type is
+   begin
+      return Hash (Item.Key);
+   end Hash;
+
+   function Hash (Item : DDS.SubscriptionBuiltinTopicData) return Ada.Containers.Hash_Type is
+   begin
+      return Hash (Item.Key);
+   end Hash;
+
+end DDSArchitectSpy_DDS;
