@@ -9,8 +9,20 @@ with DDSArchitectSpy.DDSExtra;
 with RTIDDS.Config;
 with GNAT.Formatted_String;
 procedure Ddsarchitectspy.Main is
-   use Ada.Text_IO;
    use DDSArchitectSpy.DDSExtra;
+
+   procedure Put (Item : String) is
+   begin
+      if Command_Line.Verbosity.Get > 1 then
+         Ada.Text_IO.Put (Item);
+      end if;
+   end;
+   procedure Put_Line (Item : String) is
+   begin
+      if Command_Line.Verbosity.Get > 1 then
+         Ada.Text_IO.Put_Line (Item);
+      end if;
+   end;
 
    function Image (Item : DDS.BuiltinTopicKey_T) return String is
       use GNAT.Formatted_String;
@@ -88,7 +100,13 @@ begin
 
    if Command_Line.Parser.Parse then
       Initialze;
-      delay 5.0;
+      delay Command_Line.DiscoveryTime.Get;
+      Put_Line ("Participants:");
+      for I of Participants_DR.Read  loop
+         if I.Sample_Info.Valid_Data then
+            Put (I.Data.all);
+         end if;
+      end loop;
       Put_Line ("Publications:");
       for I of Publications_DR.Read loop
          if I.Sample_Info.Valid_Data then
@@ -103,12 +121,6 @@ begin
          end if;
       end loop;
 
-      Put_Line ("Participants:");
-      for I of Participants_DR.Read  loop
-         if I.Sample_Info.Valid_Data then
-            Put (I.Data.all);
-         end if;
-      end loop;
    end if;
 
 end Ddsarchitectspy.Main;

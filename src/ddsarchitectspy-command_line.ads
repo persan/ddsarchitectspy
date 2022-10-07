@@ -1,9 +1,13 @@
-with GNATCOLL.Opt_Parse;
+with Ada.Strings.Unbounded;
 with DDS;
+with GNATCOLL.Opt_Parse;
+
 package ddsarchitectspy.Command_Line is
+   use Ada.Strings.Unbounded;
    use GNATCOLL.Opt_Parse;
+
    Parser : Argument_Parser := Create_Argument_Parser
-     (Help => "Help string for the parser");
+     (Help => "DDSArchitect spy captures the domain architecture to a json format");
 
    package Quiet is new Parse_Flag
      (Parser => Parser,
@@ -27,7 +31,26 @@ package ddsarchitectspy.Command_Line is
       Help        => "Sets the domainId (default 0).",
       Default_Val => 0);
 
-   package verbosity is new Parse_Option
+   function Convert (Arg : String) return Duration is
+     (Duration'Value (Arg));
+
+   package DiscoveryTime is new Parse_Option
+     (Parser      => Parser,
+      Short       => "-t",
+      Long        => "--discoverytime",
+      Arg_Type    => Duration,
+      Help        => "Time to wait for discovery to complete (default 10.0).",
+      Default_Val => 10.0);
+
+   package SaveTo is new Parse_Option
+     (Parser      => Parser,
+      Short       => "-o",
+      Long        => "--output",
+      Arg_Type    => Ada.Strings.Unbounded.Unbounded_String,
+      Help        => "File to save arhitecture (default ""architechure.json"").",
+      Default_Val => To_Unbounded_String (Source => "architechure.json"));
+
+   package Verbosity is new Parse_Option
      (Parser      => Parser,
       Long        => "--verbosity",
       Arg_Type    => Natural,

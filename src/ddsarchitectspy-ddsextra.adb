@@ -3,11 +3,10 @@ with System;
 with Ada.Unchecked_Conversion;
 with RTIDDS.Low_Level.ndds_dds_c_dds_c_infrastructure_h;
 with RTIDDS.Low_Level.ndds_dds_c_dds_c_infrastructure_impl_h;
-with Ada.Text_IO;
+with Ada.Strings.Hash;
 package body DDSArchitectSpy.DDSExtra is
    use RTIDDS.Low_Level.Ndds_Dds_C_Dds_C_Domain_H;
    use RTIDDS.Low_Level.Ndds_Dds_C_Dds_C_Infrastructure_Impl_H;
-   use Ada.Text_IO;
    -------------------
    -- Lookup_Entity --
    -------------------
@@ -25,7 +24,6 @@ package body DDSArchitectSpy.DDSExtra is
       function As_Entity_Ref_Access is new Ada.Unchecked_Conversion (System.Address, DDS.Entity.Ref_Access);
       E : access RTIDDS.Low_Level.ndds_dds_c_dds_c_infrastructure_h.DDS_Entity;
    begin
-      Put_Line (Key'Img);
       E := DDS_DomainParticipant_Lookup_Entity
                 (Self =>  As_DDS_DomainParticipant_Access (Self.GetInterface),
                  Key  =>  As_DDS_BuiltinTopicKey_T_Access (Key'Address));
@@ -34,5 +32,13 @@ package body DDSArchitectSpy.DDSExtra is
                  (Self => E)) else null);
 
    end Lookup_Entity;
+
+   function Hash (Item : DDS.BuiltinTopicKey_T) return Ada.Containers.Hash_Type is
+      S : String (1 .. Item'Size / Character'Size) with
+        Import => True,
+        Address => Item'Address;
+   begin
+      return Ada.Strings.Hash (S);
+   end;
 
 end DDSArchitectSpy.DDSExtra;
