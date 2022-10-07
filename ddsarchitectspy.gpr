@@ -18,11 +18,11 @@ project Ddsarchitectspy is
    end Builder;
 
    package Binder is
-      for Switches ("ada") use ("-E", "-static");
+      for Switches ("ada") use ("-E");
    end Binder;
 
    package Linker is
-      for Switches ("ada") use ("-g");
+      for Switches ("ada") use ("-g", "-static");
    end Linker;
 
 end Ddsarchitectspy;
