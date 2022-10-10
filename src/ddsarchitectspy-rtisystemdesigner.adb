@@ -45,7 +45,7 @@ package body DDSArchitectSpy.RTISystemDesigner is
             if P.Subscribers.Length > 0 then
                String'Write (To, "        <subscriber name=""auto-subscriber"">" & ASCII.LF);
                for Subscriber of P.Subscribers loop
-                  String'Write (To, "          <data_reated name=""" & Subscriber.Topic_Name.To_String & "-reader"" topic_ref=""" & Subscriber.Topic_Name.To_String & """/>" & ASCII.LF);
+                  String'Write (To, "          <data_reater name=""" & Subscriber.Topic_Name.To_String & "-reader"" topic_ref=""" & Subscriber.Topic_Name.To_String & """/>" & ASCII.LF);
                end loop;
                String'Write (To, "        </subscriber>" & ASCII.LF);
             end if;
