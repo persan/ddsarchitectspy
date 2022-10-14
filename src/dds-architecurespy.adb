@@ -90,7 +90,7 @@ begin
 
          delay Command_Line.DiscoveryTime.Get;
          outf.create (Ada.Text_IO.Out_File, Command_Line.SaveTo.Get.To_String);
-         outf.Put_Line ("""architecture"" : {");
+         outf.Put_Line ("{""architecture"" : {");
          first_Line := True;
          outf.Put_Line ("""participants"" : [");
          for I of Participants_DR.Read  loop
@@ -114,7 +114,7 @@ begin
          outf.Put_Line ("],");
 
          first_Line := True;
-         outf.Put_Line ("""publications"" : [");
+         outf.Put_Line ("""subscriptions"" : [");
          for I of Subscriptions_DR.Read loop
             if I.Sample_Info.Valid_Data then
                outf.Put_Line ((if first_Line then "" else "," & ASCII.LF));
@@ -122,8 +122,8 @@ begin
                DDS.JSON.Write (Ada.Text_IO.Text_Streams.Stream (outf), I.Data.all);
             end if;
          end loop;
-         outf.Put_Line ("]");
-         outf.Put_Line ("}");
+         outf.Put_Line ("]"); -- subscriptions
+         outf.Put_Line ("}}"); -- architecture
          outf.close;
       end if;
    end if;
