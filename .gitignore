@@ -13,3 +13,5 @@ b__*
 
 architechure.json
 *.orig
+*.json
+trace
