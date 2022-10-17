@@ -1,22 +1,28 @@
+with Ada.Calendar;
+with Ada.Streams.Stream_IO;
 with Ada.Strings.Unbounded;
+with Ada.Text_IO;
+
 with DDS.DomainParticipant;
 with DDS.DomainParticipantFactory;
+with DDS.JSON_Out_Generic;
 with DDS.ParticipantBuiltinTopicData_DataReader;
 with DDS.PublicationBuiltinTopicData_DataReader;
-with DDS.SubscriptionBuiltinTopicData_DataReader;
 with DDS.Subscriber;
+with DDS.SubscriptionBuiltinTopicData_DataReader;
 
+with GNAT.Ctrl_C;
 with GNAT.Exception_Traces;
 with GNAT.Traceback.Symbolic;
-with Ada.Text_Io;
+
 with GNATCOLL.Opt_Parse;
 with GNATCOLL.JSON;
---  with DDS.JSON_Out;
-with Ada.Streams.Stream_IO;
-with DDS.JSON_Out_Generic;
-procedure DDS.architecurespy is
+
+procedure DDS.Architecurespy is
    VERSION : constant Standard.String := "1.0.0";
    use Ada.Streams.Stream_IO;
+   use Ada.Calendar;
+
    package Command_Line is
       use Ada.Strings.Unbounded;
       use GNATCOLL.Opt_Parse;
@@ -67,6 +73,10 @@ procedure DDS.architecurespy is
          Short  => "-f",
          Long   => "--format",
          Help   => "Format output for redability.");
+      package Trace_Exceptions is new Parse_Flag
+        (Parser => Parser,
+         Long   => "--exceptions",
+         Help   => "Log all exceptions");
 
    end Command_Line;
 
@@ -76,6 +86,15 @@ procedure DDS.architecurespy is
    end;
    package JSON_Out is new DDS.JSON_Out_Generic (Stream_Access, Write);
 
+   Waiting             : Boolean := True;
+   Run_Until           : Ada.Calendar.Time;
+
+   procedure On_Ctrl_C is
+   begin
+      Waiting := False;
+      GNAT.Ctrl_C.Uninstall_Handler;
+   end;
+
    Factory           : constant DDS.DomainParticipantFactory.Ref_Access := DDS.DomainParticipantFactory.Get_Instance;
    Participant       : DDS.DomainParticipant.Ref_Access;
    BuiltinSubscriber : DDS.Subscriber.Ref_Access;
@@ -83,16 +102,20 @@ procedure DDS.architecurespy is
    Participants_DR     : DDS.ParticipantBuiltinTopicData_DataReader.Ref_Access;
    Publications_DR     : DDS.PublicationBuiltinTopicData_DataReader.Ref_Access;
    Subscriptions_DR    : DDS.SubscriptionBuiltinTopicData_DataReader.Ref_Access;
-   outf                : File_Type;
+   Outf                : File_Type;
 
-   first_Line          : Boolean := True;
+   First_Line          : Boolean := True;
+
 begin
    if Command_Line.Parser.Parse then
       if Command_Line.Version.Get then
          Ada.Text_Io.Put_Line (VERSION);
       else
-         GNAT.Exception_Traces.Trace_On (GNAT.Exception_Traces.Every_Raise);
-         GNAT.Exception_Traces.Set_Trace_Decorator (GNAT.Traceback.Symbolic.Symbolic_Traceback_No_Hex'Access);
+         GNAT.Ctrl_C.Install_Handler (On_Ctrl_C'Unrestricted_Access);
+         if Command_Line.Trace_Exceptions.get then
+            GNAT.Exception_Traces.Trace_On (GNAT.Exception_Traces.Every_Raise);
+            GNAT.Exception_Traces.Set_Trace_Decorator (GNAT.Traceback.Symbolic.Symbolic_Traceback_No_Hex'Access);
+         end if;
 
          Participant := Factory.Create_Participant (Domain_Id => Command_Line.DomainId.Get);
          BuiltinSubscriber := Participant.Get_Builtin_Subscriber;
@@ -100,65 +123,73 @@ begin
          Participants_DR  := DDS.ParticipantBuiltinTopicData_DataReader.Ref_Access (BuiltinSubscriber.Lookup_DataReader (DDS.PARTICIPANT_TOPIC_NAME));
          Publications_DR  := DDS.PublicationBuiltinTopicData_DataReader.Ref_Access (BuiltinSubscriber.Lookup_DataReader (DDS.PUBLICATION_TOPIC_NAME));
          Subscriptions_DR := DDS.SubscriptionBuiltinTopicData_DataReader.Ref_Access (BuiltinSubscriber.Lookup_DataReader (DDS.SUBSCRIPTION_TOPIC_NAME));
+         Run_Until :=  Ada.Calendar.Clock + Command_Line.DiscoveryTime.Get;
 
-         delay Command_Line.DiscoveryTime.Get;
+         Ada.Text_Io.Put_Line ("Wait for discovery");
+         while Waiting and (Run_Until >= Ada.Calendar.Clock) loop
+            delay 0.5;
+            Ada.Text_Io.Put (".");
+         end loop;
+         Ada.Text_Io.New_Line;
+         Ada.Text_Io.Put_Line ("Collecting data");
 
-         outf.create (Out_File, Command_Line.SaveTo.Get.To_String);
+         Outf.Create (Out_File, Command_Line.SaveTo.Get.To_String);
          Standard.String'Write (Outf.Stream, "{""architecture"" : {"  & ASCII.LF);
-         first_Line := True;
+         First_Line := True;
          Standard.String'Write (Outf.Stream, """participants"" : [");
          for I of Participants_DR.Read  loop
             if I.Sample_Info.Valid_Data then
-                Standard.String'Write (Outf.Stream, (if first_Line then "" else "," & ASCII.LF));
-               first_Line := False;
+               Standard.String'Write (Outf.Stream, (if First_Line then "" else "," & ASCII.LF));
+               First_Line := False;
                JSON_Out.Write (Outf.Stream, I.Data.all);
             end if;
          end loop;
-          Standard.String'Write (Outf.Stream, "],");
+         Standard.String'Write (Outf.Stream, "],");
 
-         first_Line := True;
-          Standard.String'Write (Outf.Stream, """publications"" : [");
+         First_Line := True;
+         Standard.String'Write (Outf.Stream, """publications"" : [");
          for I of Publications_DR.Read loop
             if I.Sample_Info.Valid_Data then
-                Standard.String'Write (Outf.Stream, (if first_Line then "" else "," & ASCII.LF));
-               first_Line := False;
+               Standard.String'Write (Outf.Stream, (if First_Line then "" else "," & ASCII.LF));
+               First_Line := False;
                JSON_Out.Write (Outf.Stream, I.Data.all);
             end if;
          end loop;
-          Standard.String'Write (Outf.Stream, "],");
+         Standard.String'Write (Outf.Stream, "],");
 
-         first_Line := True;
-          Standard.String'Write (Outf.Stream, """subscriptions"" : [");
+         First_Line := True;
+         Standard.String'Write (Outf.Stream, """subscriptions"" : [");
          for I of Subscriptions_DR.Read loop
             if I.Sample_Info.Valid_Data then
-                Standard.String'Write (Outf.Stream, (if first_Line then "" else "," & ASCII.LF));
-               first_Line := False;
+               Standard.String'Write (Outf.Stream, (if First_Line then "" else "," & ASCII.LF));
+               First_Line := False;
                JSON_Out.Write (Outf.Stream, I.Data.all);
             end if;
          end loop;
          Standard.String'Write (Outf.Stream, "]"); -- subscriptions
          Standard.String'Write (Outf.Stream, "}}"); -- architecture
-         outf.close;
+         Outf.Close;
+
+         if Command_Line.Format_Output.Get then
+            Outf.Open (In_File, Command_Line.SaveTo.Get.To_String);
+
+            declare
+               Size             : constant Count := Outf.Size;
+               Buffer           : Ada.Streams.Stream_Element_Array (1 .. Ada.Streams.Stream_Element_Offset (Size));
+               Buffer_As_String : Standard.String (1 .. Standard.Natural (Size)) with
+                 Import => True,
+                 Address => Buffer'Address;
+               Last             : Ada.Streams.Stream_Element_Offset;
+            begin
+               Outf.Read (Buffer, Last);
+               Outf.Close;
+               Outf.Create (Out_File, Command_Line.SaveTo.Get.To_String);
+               Standard.String'Write (Outf.Stream, GNATCOLL.JSON.Write (GNATCOLL.JSON.Read (Buffer_As_String), Compact => False));
+            end;
+         end if;
+
+         Participant.Delete_Contained_Entities;
+         Factory.Delete_Participant (Participant);
       end if;
    end if;
-   if Command_Line.Format_Output.Get then
-      Outf.Open (In_File, Command_Line.SaveTo.Get.To_String);
-
-      declare
-         Size : constant Count := Outf.Size;
-         Buffer : Ada.Streams.Stream_Element_Array (1 .. Ada.Streams.Stream_Element_Offset (Size));
-         Buffer_As_String : Standard.String (1 .. Standard.Natural (Size)) with
-           Import => True,
-           Address => Buffer'Address;
-         Last             : Ada.Streams.Stream_Element_Offset;
-      begin
-         Outf.Read (Buffer, Last);
-         Outf.Close;
-         Outf.Create (Out_File, Command_Line.SaveTo.Get.To_String);
-         Standard.String'Write (Outf.Stream, GNATCOLL.JSON.Write (GNATCOLL.JSON.Read (Buffer_As_String), Compact => False));
-      end;
-
-   end if;
-   Participant.Delete_Contained_Entities;
-   Factory.Delete_Participant (Participant);
-end DDS.architecurespy;
+end DDS.Architecurespy;
