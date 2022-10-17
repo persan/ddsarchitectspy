@@ -11,8 +11,9 @@ with GNAT.Traceback.Symbolic;
 with Ada.Text_Io;
 with GNATCOLL.Opt_Parse;
 with GNATCOLL.JSON;
-with DDS.JSON_Out;
+--  with DDS.JSON_Out;
 with Ada.Streams.Stream_IO;
+with DDS.JSON_Out_Generic;
 procedure DDS.architecurespy is
    VERSION : constant Standard.String := "1.0.0";
    use Ada.Streams.Stream_IO;
@@ -69,6 +70,12 @@ procedure DDS.architecurespy is
 
    end Command_Line;
 
+   procedure Write (Stream : Ada.Streams.Stream_IO.Stream_Access; Item : Standard.String) is
+   begin
+      Standard.String'Write (Stream, Item);
+   end;
+   package JSON_Out is new DDS.JSON_Out_Generic (Stream_Access, Write);
+
    Factory           : constant DDS.DomainParticipantFactory.Ref_Access := DDS.DomainParticipantFactory.Get_Instance;
    Participant       : DDS.DomainParticipant.Ref_Access;
    BuiltinSubscriber : DDS.Subscriber.Ref_Access;
@@ -104,7 +111,7 @@ begin
             if I.Sample_Info.Valid_Data then
                 Standard.String'Write (Outf.Stream, (if first_Line then "" else "," & ASCII.LF));
                first_Line := False;
-               DDS.JSON_Out.Write (Outf.Stream, I.Data.all);
+               JSON_Out.Write (Outf.Stream, I.Data.all);
             end if;
          end loop;
           Standard.String'Write (Outf.Stream, "],");
@@ -115,7 +122,7 @@ begin
             if I.Sample_Info.Valid_Data then
                 Standard.String'Write (Outf.Stream, (if first_Line then "" else "," & ASCII.LF));
                first_Line := False;
-               DDS.JSON_Out.Write (Outf.Stream, I.Data.all);
+               JSON_Out.Write (Outf.Stream, I.Data.all);
             end if;
          end loop;
           Standard.String'Write (Outf.Stream, "],");
@@ -126,7 +133,7 @@ begin
             if I.Sample_Info.Valid_Data then
                 Standard.String'Write (Outf.Stream, (if first_Line then "" else "," & ASCII.LF));
                first_Line := False;
-               DDS.JSON_Out.Write (Outf.Stream, I.Data.all);
+               JSON_Out.Write (Outf.Stream, I.Data.all);
             end if;
          end loop;
          Standard.String'Write (Outf.Stream, "]"); -- subscriptions

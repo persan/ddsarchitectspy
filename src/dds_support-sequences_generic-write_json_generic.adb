@@ -1,5 +1,5 @@
 procedure DDS_Support.Sequences_Generic.Write_JSON_Generic
-  (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Sequence)
+  (To : Stream; Item : Sequence)
 is
       First_Line : Boolean := True;
 begin

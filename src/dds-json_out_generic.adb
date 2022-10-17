@@ -1,24 +1,19 @@
-package body DDS.JSON_Out is
+package body DDS.JSON_Out_Generic is
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Standard.String) is
+   procedure Write (To : Stream; Item : DDS.BuiltinTopicKey_T) is
    begin
-      Standard.String'Write (To, Item);
-   end Write;
-
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DDS.BuiltinTopicKey_T) is
-   begin
-      Standard.String'Write (To, "[" & Item.Value (Item.Value'First)'Img & "," &
+      Write (To, "[" & Item.Value (Item.Value'First)'Img & "," &
                                Item.Value (Item.Value'First + 1)'Img  & "," &
                                Item.Value (Item.Value'First + 2)'Img & "," &
                                Item.Value (Item.Value'First + 3)'Img & "]");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DDS.String) is
+   procedure Write (To : Stream; Item : DDS.String) is
    begin
-      Standard.String'Write (To,  '"' & (if Item = DDS.NULL_STRING then """" else (To_Standard_String (Item) & '"')));
+      Write (To,  '"' & (if Item = DDS.NULL_STRING then """" else (To_Standard_String (Item) & '"')));
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DDS.EntityNameQosPolicy)  is
+   procedure Write (To : Stream; Item : DDS.EntityNameQosPolicy)  is
    begin
       Write (To,  "[");
       Write (To, Item.Name);
@@ -27,17 +22,17 @@ package body DDS.JSON_Out is
       Write (To, "]");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Natural) is
+   procedure Write (To : Stream; Item : Natural) is
    begin
       Write (To, Item'Img);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Octet) is
+   procedure Write (To : Stream; Item : Octet) is
    begin
       Write (To, Item'Img);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Octet_Seq.Sequence) is
+   procedure Write (To : Stream; Item : Octet_Seq.Sequence) is
       First_Line : Boolean := True;
    begin
       Write (To, "[");
@@ -49,24 +44,24 @@ package body DDS.JSON_Out is
       Write (To, "]");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : UserDataQosPolicy) is
+   procedure Write (To : Stream; Item : UserDataQosPolicy) is
    begin
       Write (To, Item.Value);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DDS.Boolean) is
+   procedure Write (To : Stream; Item : DDS.Boolean) is
    begin
       Write (To, (if Item then "true" else "false"));
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Property_T) is
+   procedure Write (To : Stream; Item : Property_T) is
    begin
       Write (To, "{""Name"" : "); Write (To, Item.Name); Write (To, "," & ASCII.LF);
       Write (To, " ""Value"" : "); Write (To, Item.Value); Write (To, "," & ASCII.LF);
       Write (To, " ""Propagate"" : "); Write (To, Item.Propagate); Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Property_T_Seq.Sequence) is
+   procedure Write (To : Stream; Item : Property_T_Seq.Sequence) is
       First_Line : Boolean := True;
    begin
       Write (To, "[");
@@ -78,12 +73,12 @@ package body DDS.JSON_Out is
       Write (To, "]");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : PropertyQosPolicy) is
+   procedure Write (To : Stream; Item : PropertyQosPolicy) is
    begin
       Write (To, Item.Value);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : VendorId_Array_T) is
+   procedure Write (To : Stream; Item : VendorId_Array_T) is
       First_Line : Boolean := True;
    begin
       Write (To, "[");
@@ -95,32 +90,32 @@ package body DDS.JSON_Out is
       Write (To, "]");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : VendorId_T) is
+   procedure Write (To : Stream; Item : VendorId_T) is
    begin
       Write (To, Item.VendorId);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DomainId_T) is
+   procedure Write (To : Stream; Item : DomainId_T) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : EncapsulationId_T) is
+   procedure Write (To : Stream; Item : EncapsulationId_T) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Transport_ClassId_T) is
+   procedure Write (To : Stream; Item : Transport_ClassId_T) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Unsigned_Long) is
+   procedure Write (To : Stream; Item : Unsigned_Long) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Locator_Address_Array_T) is
+   procedure Write (To : Stream; Item : Locator_Address_Array_T) is
       First_Line : Boolean := True;
    begin
       Write (To, "[");
@@ -132,7 +127,7 @@ package body DDS.JSON_Out is
       Write (To, "]");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : GUID_T_Value_Array) is
+   procedure Write (To : Stream; Item : GUID_T_Value_Array) is
       First_Line : Boolean := True;
    begin
       Write (To, "[");
@@ -144,12 +139,12 @@ package body DDS.JSON_Out is
       Write (To, "]");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Guid_T) is
+   procedure Write (To : Stream; Item : Guid_T) is
    begin
       Write (To, Item.Value);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Duration_T) is
+   procedure Write (To : Stream; Item : Duration_T) is
    begin
       Write (To, "{");
       Write (To, """Sec"" : "); Write (To, Item.Sec); Write (To, "," & ASCII.LF);
@@ -157,7 +152,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Locator_T) is
+   procedure Write (To : Stream; Item : Locator_T) is
    begin
       Write (To, "{");
       Write (To, """Kind"" : "); Write (To, Item.Kind); Write (To, "," & ASCII.LF);
@@ -167,7 +162,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : OwnershipQosPolicyKind) is
+   procedure Write (To : Stream; Item : OwnershipQosPolicyKind) is
    begin
       Write (To, (case Item is
                 when SHARED_OWNERSHIP_QOS    => """SHARED_OWNERSHIP_QOS""",
@@ -175,25 +170,26 @@ package body DDS.JSON_Out is
                 when others                  => """<INVALID_OWNERSHIP_QOS>"""
             ));
    end Write;
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : OwnershipQosPolicy) is
+   procedure Write (To : Stream; Item : OwnershipQosPolicy) is
    begin
       Write (To, "{");
       Write (To, """Kind"" : "); Write (To, Item.Kind);
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : PartitionQosPolicy) is
+   procedure Write (To : Stream; Item : PartitionQosPolicy) is
    begin
       Write (To, "{");
-      Write (To, """Name"" : "); Write (To, Item.Name);
+      Write (To, """Name"" : ");
+      Write (To, Item.Name);
       Write (To, "}");
    end Write;
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : OwnershipStrengthQosPolicy) is
+   procedure Write (To : Stream; Item : OwnershipStrengthQosPolicy) is
    begin
       Write (To, Item.Value);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : TransportInfo_T) is
+   procedure Write (To : Stream; Item : TransportInfo_T) is
    begin
       Write (To, "{");
       Write (To, """Class_Id"" : "); Write (To, Item.Class_Id); Write (To, "," & ASCII.LF);
@@ -201,22 +197,22 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DestinationOrderQosPolicyKind) is
+   procedure Write (To : Stream; Item : DestinationOrderQosPolicyKind) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DestinationOrderQosPolicyScopeKind) is
+   procedure Write (To : Stream; Item : DestinationOrderQosPolicyScopeKind) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : TopicDataQosPolicy) is
+   procedure Write (To : Stream; Item : TopicDataQosPolicy) is
    begin
       Write (To, Item.Value);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : Tags_T) is
+   procedure Write (To : Stream; Item : Tags_T) is
    begin
       Write (To, "{");
       Write (To, """Name"" : "); Write (To, Item.Name); Write (To, "," & ASCII.LF);
@@ -224,12 +220,12 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DataTagQosPolicy) is
+   procedure Write (To : Stream; Item : DataTagQosPolicy) is
    begin
       Write (To, Item.Value);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : PresentationQosPolicyAccessScopeKind) is
+   procedure Write (To : Stream; Item : PresentationQosPolicyAccessScopeKind) is
    begin
       Write (To => To, Item => (case Item is
                                    when INSTANCE_PRESENTATION_QOS        => """INSTANCE_PRESENTATION_QOS""",
@@ -240,7 +236,7 @@ package body DDS.JSON_Out is
                                ));
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DestinationOrderQosPolicy) is
+   procedure Write (To : Stream; Item : DestinationOrderQosPolicy) is
    begin
       Write (To, "{");
       Write (To, """Kind"" : "); Write (To, Item.Kind); Write (To, "," & ASCII.LF);
@@ -249,7 +245,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : PresentationQosPolicy) is
+   procedure Write (To : Stream; Item : PresentationQosPolicy) is
    begin
       Write (To, "{");
       Write (To, """Access_Scope"" : "); Write (To, Item.Access_Scope); Write (To, "," & ASCII.LF);
@@ -258,11 +254,11 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DurabilityQosPolicyKind) is
+   procedure Write (To : Stream; Item : DurabilityQosPolicyKind) is
    begin
       Write (To, Item'Image);
    end Write;
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : ServiceQosPolicy) is
+   procedure Write (To : Stream; Item : ServiceQosPolicy) is
    begin
 
          Write (To => To, Item => (case Item.Kind is
@@ -278,7 +274,7 @@ package body DDS.JSON_Out is
                                ));
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DurabilityQosPolicy) is
+   procedure Write (To : Stream; Item : DurabilityQosPolicy) is
    begin
       Write (To, "{");
       Write (To, """Kind"" : "); Write (To, Item.Kind); Write (To, "," & ASCII.LF);
@@ -287,7 +283,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : LivelinessQosPolicyKind) is
+   procedure Write (To : Stream; Item : LivelinessQosPolicyKind) is
    begin
       Write (To => To, Item => (case Item is
                                    when AUTOMATIC_LIVELINESS_QOS             => """AUTOMATIC_LIVELINESS_QOS""",
@@ -297,7 +293,7 @@ package body DDS.JSON_Out is
                                ));
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : LivelinessQosPolicy) is
+   procedure Write (To : Stream; Item : LivelinessQosPolicy) is
    begin
       Write (To, "{");
       Write (To, """Kind"" : "); Write (To, Item.Kind); Write (To, "," & ASCII.LF);
@@ -306,21 +302,21 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DeadlineQosPolicy) is
+   procedure Write (To : Stream; Item : DeadlineQosPolicy) is
    begin
       Write (To, "{");
       Write (To, """Period"" : "); Write (To, Item.Period);
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : LatencyBudgetQosPolicy) is
+   procedure Write (To : Stream; Item : LatencyBudgetQosPolicy) is
    begin
       Write (To, "{");
       Write (To, """Duration"" : "); Write (To, Item.Duration);
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DataRepresentationId_T) is
+   procedure Write (To : Stream; Item : DataRepresentationId_T) is
    begin
       Write (To => To, Item => (if Item = XCDR_DATA_REPRESENTATION then """XCDR_DATA_REPRESENTATION"""
                                 elsif Item = XML_DATA_REPRESENTATION then """XML_DATA_REPRESENTATION"""
@@ -330,7 +326,7 @@ package body DDS.JSON_Out is
                                ));
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : CompressionSettings_T) is
+   procedure Write (To : Stream; Item : CompressionSettings_T) is
    begin
       Write (To, "{");
       Write (To, """Compression_Ids"" : "); Write (To, Item.Compression_Ids); Write (To, "," & ASCII.LF);
@@ -339,7 +335,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DataRepresentationQosPolicy) is
+   procedure Write (To : Stream; Item : DataRepresentationQosPolicy) is
    begin
       Write (To, "{");
       Write (To, """Value"" : "); Write (To, Item.Value); Write (To, "," & ASCII.LF);
@@ -347,17 +343,17 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : ParticipantTrustAttributesMask) is
+   procedure Write (To : Stream; Item : ParticipantTrustAttributesMask) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : PluginParticipantTrustAttributesMask) is
+   procedure Write (To : Stream; Item : PluginParticipantTrustAttributesMask) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : ParticipantTrustInfo) is
+   procedure Write (To : Stream; Item : ParticipantTrustInfo) is
    begin
       Write (To, "{");
       Write (To, """Bitmask"" : "); Write (To, Item.Bitmask); Write (To, "," & ASCII.LF);
@@ -365,22 +361,22 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : TrustInterceptorMask) is
+   procedure Write (To : Stream; Item : TrustInterceptorMask) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : TrustSignatureMask) is
+   procedure Write (To : Stream; Item : TrustSignatureMask) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : TrustSignatureBit) is
+   procedure Write (To : Stream; Item : TrustSignatureBit) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : ParticipantTrustSignatureAlgorithms) is
+   procedure Write (To : Stream; Item : ParticipantTrustSignatureAlgorithms) is
    begin
       Write (To, "{");
       Write (To, """trust_chain_supported_mask"" : "); Write (To, Item.trust_chain_supported_mask); Write (To, "," & ASCII.LF);
@@ -390,7 +386,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : ParticipantTrustInterceptorAlgorithms) is
+   procedure Write (To : Stream; Item : ParticipantTrustInterceptorAlgorithms) is
    begin
       Write (To, "{");
       Write (To, """supported_mask"" : "); Write (To, Item.supported_mask); Write (To, "," & ASCII.LF);
@@ -399,22 +395,22 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : TrustKeyEstablishmentMask) is
+   procedure Write (To : Stream; Item : TrustKeyEstablishmentMask) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : GroupDataQosPolicy) is
+   procedure Write (To : Stream; Item : GroupDataQosPolicy) is
    begin
       Write (To, Item.Value);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : TrustKeyEstablishmentBit) is
+   procedure Write (To : Stream; Item : TrustKeyEstablishmentBit) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : ParticipantTrustKeyEstablishmentAlgorithms) is
+   procedure Write (To : Stream; Item : ParticipantTrustKeyEstablishmentAlgorithms) is
    begin
       Write (To, "{");
       Write (To, """supported_mask"" : "); Write (To, Item.supported_mask); Write (To, "," & ASCII.LF);
@@ -422,7 +418,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : ParticipantTrustAlgorithms) is
+   procedure Write (To : Stream; Item : ParticipantTrustAlgorithms) is
    begin
       Write (To, "{");
       Write (To, """signature"" : "); Write (To, Item.signature); Write (To, "," & ASCII.LF);
@@ -431,7 +427,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : ContentFilterProperty_T) is
+   procedure Write (To : Stream; Item : ContentFilterProperty_T) is
    begin
       Write (To, "{");
       Write (To, """Content_Filter_Topic_Name"" : "); Write (To, Item.Content_Filter_Topic_Name); Write (To, "," & ASCII.LF);
@@ -442,7 +438,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DDS.ParticipantBuiltinTopicData) is
+   procedure Write (To : Stream; Item : DDS.ParticipantBuiltinTopicData) is
    begin
       Write (To, "{");
       Write (To, """Key"" : "); Write (To, Item.Key); Write (To, "," & ASCII.LF);
@@ -466,7 +462,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DDS.PublicationBuiltinTopicData) is
+   procedure Write (To : Stream; Item : DDS.PublicationBuiltinTopicData) is
    begin
       Write (To, "{");
       Write (To, """Key"" : "); Write (To, Item.Key); Write (To, "," & ASCII.LF);
@@ -491,7 +487,7 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-   procedure Write (To : not null access Ada.Streams.Root_Stream_Type'Class; Item : DDS.SubscriptionBuiltinTopicData) is
+   procedure Write (To : Stream; Item : DDS.SubscriptionBuiltinTopicData) is
    begin
       Write (To, "{");
       Write (To, """Key"" : "); Write (To, Item.Key); Write (To, "," & ASCII.LF);
@@ -521,4 +517,4 @@ package body DDS.JSON_Out is
       Write (To, "}");
    end Write;
 
-end DDS.JSON_Out;
+end DDS.JSON_Out_Generic;
