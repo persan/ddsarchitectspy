@@ -2,7 +2,8 @@
 
 Locates all endpoints in a domain and prints the discoverd architecture to a file.
 
-The output format shall be at least:
-* .json  : Just simple json to be used in other tools.
-* .xmi   : suited for modelling tools
-* .xml   : suitet for the rtiarchitect tool.
+* The output format is json
+* Requirements to build:
+** RTI Connext 7.0.0 or better
+** GNATPro 22.2 or better
+
