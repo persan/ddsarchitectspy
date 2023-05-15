@@ -3,9 +3,9 @@ package body DDS.JSON_Out_Generic is
    procedure Write (To : Stream; Item : DDS.BuiltinTopicKey_T) is
    begin
       Write (To, "[" & Item.Value (Item.Value'First)'Img & "," &
-                               Item.Value (Item.Value'First + 1)'Img  & "," &
-                               Item.Value (Item.Value'First + 2)'Img & "," &
-                               Item.Value (Item.Value'First + 3)'Img & "]");
+               Item.Value (Item.Value'First + 1)'Img  & "," &
+               Item.Value (Item.Value'First + 2)'Img & "," &
+               Item.Value (Item.Value'First + 3)'Img & "]");
    end Write;
 
    procedure Write (To : Stream; Item : DDS.String) is
@@ -32,17 +32,17 @@ package body DDS.JSON_Out_Generic is
       Write (To, Item'Img);
    end Write;
 
-   procedure Write (To : Stream; Item : Octet_Seq.Sequence) is
+   procedure Write_Array_Generic (To : Stream; Item : Array_Type) is
       First_Line : Boolean := True;
    begin
       Write (To, "[");
       for I of Item loop
          Write (To, (if First_Line then "" else ","));
          First_Line := False;
-         Write (To, I.all);
+         Write (To, I);
       end loop;
       Write (To, "]");
-   end Write;
+   end Write_Array_Generic;
 
    procedure Write (To : Stream; Item : UserDataQosPolicy) is
    begin
@@ -59,18 +59,6 @@ package body DDS.JSON_Out_Generic is
       Write (To, "{""Name"" : "); Write (To, Item.Name); Write (To, "," & ASCII.LF);
       Write (To, " ""Value"" : "); Write (To, Item.Value); Write (To, "," & ASCII.LF);
       Write (To, " ""Propagate"" : "); Write (To, Item.Propagate); Write (To, "}");
-   end Write;
-
-   procedure Write (To : Stream; Item : Property_T_Seq.Sequence) is
-      First_Line : Boolean := True;
-   begin
-      Write (To, "[");
-      for I of Item loop
-         Write (To, (if First_Line then "" else "," & ASCII.LF));
-         First_Line := False;
-         Write (To, I.all);
-      end loop;
-      Write (To, "]");
    end Write;
 
    procedure Write (To : Stream; Item : PropertyQosPolicy) is
@@ -170,6 +158,7 @@ package body DDS.JSON_Out_Generic is
                 when others                  => """<INVALID_OWNERSHIP_QOS>"""
             ));
    end Write;
+
    procedure Write (To : Stream; Item : OwnershipQosPolicy) is
    begin
       Write (To, "{");
@@ -261,7 +250,7 @@ package body DDS.JSON_Out_Generic is
    procedure Write (To : Stream; Item : ServiceQosPolicy) is
    begin
 
-         Write (To => To, Item => (case Item.Kind is
+      Write (To => To, Item => (case Item.Kind is
                                    when NO_SERVICE_QOS                   => """NO_SERVICE_QOS""",
                                    when PERSISTENCE_SERVICE_QOS          => """PERSISTENCE_SERVICE_QOS""",
                                    when QUEUING_SERVICE_QOS              => """QUEUING_SERVICE_QOS""",
@@ -353,78 +342,78 @@ package body DDS.JSON_Out_Generic is
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : Stream; Item : ParticipantTrustInfo) is
+   procedure Write (To : Stream; Item : EndpointTrustAttributesMask) is
    begin
-      Write (To, "{");
-      Write (To, """Bitmask"" : "); Write (To, Item.Bitmask); Write (To, "," & ASCII.LF);
-      Write (To, """Plugin_Bitmask"" : "); Write (To, Item.Plugin_Bitmask);
-      Write (To, "}");
+      Write (To, Item'Image);
    end Write;
-
-   procedure Write (To : Stream; Item : TrustInterceptorMask) is
+   procedure Write (To : Stream; Item : PluginEndpointTrustAttributesMask) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : Stream; Item : TrustSignatureMask) is
+   procedure Write (To : Stream; Item : EndpointTrustProtectionInfo) is
+   begin
+      Write (To, "{""bitmask"" : "); Write (To, Item.Bitmask); Write (To, "," & ASCII.LF);
+      Write (To, " ""plugin_bitmask"" : "); Write (To, Item.Plugin_Bitmask); Write (To, "}");
+   end Write;
+
+   procedure Write (To : Stream; Item : TrustAlgorithmSet) is
    begin
       Write (To, Item'Image);
    end Write;
 
-   procedure Write (To : Stream; Item : TrustSignatureBit) is
+   procedure Write (To : Stream; Item : TrustAlgorithmRequirements) is
    begin
-      Write (To, Item'Image);
+      Write (To, "{""supported_mask"" : "); Write (To, Item.Supported_Mask); Write (To, "," & ASCII.LF);
+      Write (To, " ""required_mask"" : "); Write (To, Item.Required_Mask); Write (To, "}");
    end Write;
 
-   procedure Write (To : Stream; Item : ParticipantTrustSignatureAlgorithms) is
+   procedure Write (To : Stream; Item : ParticipantTrustSignatureAlgorithmInfo) is
    begin
-      Write (To, "{");
-      Write (To, """trust_chain_supported_mask"" : "); Write (To, Item.trust_chain_supported_mask); Write (To, "," & ASCII.LF);
-      Write (To, """trust_chain_used_mask"" : "); Write (To, Item.trust_chain_used_mask); Write (To, "," & ASCII.LF);
-      Write (To, """auth_supported_mask"" : "); Write (To, Item.auth_supported_mask); Write (To, "," & ASCII.LF);
-      Write (To, """auth_used_bit"" : "); Write (To, Item.auth_used_bit);
-      Write (To, "}");
+      Write (To, "{""trust_chain"" : "); Write (To, Item.Trust_Chain); Write (To, "," & ASCII.LF);
+      Write (To, " ""message_auth"" : "); Write (To, Item.Message_Auth); Write (To, "}");
    end Write;
 
-   procedure Write (To : Stream; Item : ParticipantTrustInterceptorAlgorithms) is
+   procedure Write (To : Stream; Item : ParticipantTrustKeyEstablishmentAlgorithmInfo) is
    begin
-      Write (To, "{");
-      Write (To, """supported_mask"" : "); Write (To, Item.supported_mask); Write (To, "," & ASCII.LF);
-      Write (To, """builtin_endpoints_used_bit"" : "); Write (To, Item.builtin_endpoints_used_bit); Write (To, "," & ASCII.LF);
-      Write (To, """builtin_endpoints_key_exchange_used_bit"" : "); Write (To, Item.builtin_endpoints_key_exchange_used_bit);
-      Write (To, "}");
+      Write (To, "{""shared_secret"" : "); Write (To, Item.Shared_Secret); Write (To, "}");
    end Write;
 
-   procedure Write (To : Stream; Item : TrustKeyEstablishmentMask) is
+   procedure Write (To : Stream; Item : ParticipantTrustInterceptorAlgorithmInfo) is
    begin
-      Write (To, Item'Image);
+      Write (To, "{""supported_mask"" : "); Write (To, Item.Supported_Mask); Write (To, "," & ASCII.LF);
+      Write (To, " ""builtin_endpoints_required_mask"" : "); Write (To, Item.Builtin_Endpoints_Required_Mask); Write (To, "," & ASCII.LF);
+      Write (To, " ""builtin_kx_endpoints_required_mask"" : "); Write (To, Item.Builtin_Kx_Endpoints_Required_Mask); Write (To, "}");
    end Write;
 
+   procedure Write (To : Stream; Item : ParticipantTrustAlgorithmInfo) is
+   begin
+      Write (To, "{""signature"" : "); Write (To, Item.Signature); Write (To, "," & ASCII.LF);
+      Write (To, " ""key_establishment"" : "); Write (To, Item.Key_Establishment); Write (To, "," & ASCII.LF);
+      Write (To, " ""interceptor"" : "); Write (To, Item.Interceptor); Write (To, "}");
+   end Write;
+
+   procedure Write (To : Stream; Item : EndpointTrustInterceptorAlgorithmInfo) is
+   begin
+      Write (To, "{""required_mask"" : "); Write (To, Item.Required_Mask); Write (To, "," & ASCII.LF);
+      Write (To, " ""supported_mask"" : "); Write (To, Item.Supported_Mask); Write (To, "}");
+   end Write;
+
+   procedure Write (To : Stream; Item : EndpointTrustAlgorithmInfo) is
+   begin
+      Write (To, "{""interceptor"" : "); Write (To, Item.Interceptor); Write (To, "}");
+   end Write;
+
+   --
    procedure Write (To : Stream; Item : GroupDataQosPolicy) is
    begin
       Write (To, Item.Value);
    end Write;
 
-   procedure Write (To : Stream; Item : TrustKeyEstablishmentBit) is
+   procedure Write (To : Stream; Item : ParticipantTrustProtectionInfo) is
    begin
-      Write (To, Item'Image);
-   end Write;
-
-   procedure Write (To : Stream; Item : ParticipantTrustKeyEstablishmentAlgorithms) is
-   begin
-      Write (To, "{");
-      Write (To, """supported_mask"" : "); Write (To, Item.supported_mask); Write (To, "," & ASCII.LF);
-      Write (To, """preferred_bit"" : "); Write (To, Item.preferred_bit);
-      Write (To, "}");
-   end Write;
-
-   procedure Write (To : Stream; Item : ParticipantTrustAlgorithms) is
-   begin
-      Write (To, "{");
-      Write (To, """signature"" : "); Write (To, Item.signature); Write (To, "," & ASCII.LF);
-      Write (To, """key_establishment"" : "); Write (To, Item.key_establishment); Write (To, "," & ASCII.LF);
-      Write (To, """interceptor"" : "); Write (To, Item.interceptor);
-      Write (To, "}");
+      Write (To, "{""bitmask"" : "); Write (To, Item.Bitmask); Write (To, "," & ASCII.LF);
+      Write (To, " ""plugin_bitmask"" : "); Write (To, Item.Plugin_Bitmask); Write (To, "}");
    end Write;
 
    procedure Write (To : Stream; Item : ContentFilterProperty_T) is
@@ -454,11 +443,12 @@ package body DDS.JSON_Out_Generic is
       Write (To, """Domain_Id"" : "); Write (To, Item.Domain_Id); Write (To, "," & ASCII.LF);
       Write (To, """Transport_Info"" : "); Write (To, Item.Transport_Info); Write (To, "," & ASCII.LF);
       Write (To, """Reachability_Lease_Duration"" : "); Write (To, Item.Reachability_Lease_Duration); Write (To, "," & ASCII.LF);
-      Write (To, """partition"" : "); Write (To, Item.partition); Write (To, "," & ASCII.LF);
-      Write (To, """trust_info"" : "); Write (To, Item.trust_info); Write (To, "," & ASCII.LF);
-      Write (To, """trust_algorithms"" : "); Write (To, Item.trust_algorithms); Write (To, "," & ASCII.LF);
-      Write (To, """vendor_builtin_endpoints"" : "); Write (To, Item.vendor_builtin_endpoints); Write (To, "," & ASCII.LF);
-      Write (To, """service"" : "); Write (To, Item.service);
+      Write (To, """partition"" : "); Write (To, Item.Partition); Write (To, "," & ASCII.LF);
+      Write (To, """trust_protection_info"" : "); Write (To, Item.Trust_Protection_Info); Write (To, "," & ASCII.LF);
+      Write (To, """trust_algorithm_info"" : "); Write (To, Item.Trust_Algorithm_Info); Write (To, "," & ASCII.LF);
+      Write (To, """partial_configuration"" : "); Write (To, Item.Partial_Configuration); Write (To, "," & ASCII.LF);
+      Write (To, """vendor_builtin_endpoints"" : "); Write (To, Item.Vendor_Builtin_Endpoints); Write (To, "," & ASCII.LF);
+      Write (To, """service"" : "); Write (To, Item.Service);
       Write (To, "}");
    end Write;
 

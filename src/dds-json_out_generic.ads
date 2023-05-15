@@ -8,11 +8,11 @@ package DDS.JSON_Out_Generic is
    procedure Write (To : Stream; Item : DDS.EntityNameQosPolicy);
    procedure Write (To : Stream; Item : Natural);
    procedure Write (To : Stream; Item : Octet);
-   procedure Write (To : Stream; Item : Octet_Seq.Sequence);
+   procedure Write is new Octet_Seq.Write_JSON_Generic (Stream, Write, Write);
    procedure Write (To : Stream; Item : UserDataQosPolicy);
    procedure Write (To : Stream; Item : DDS.Boolean);
    procedure Write (To : Stream; Item : Property_T);
-   procedure Write (To : Stream; Item : Property_T_Seq.Sequence);
+   procedure Write is new Property_T_Seq.Write_JSON_Generic (Stream, Write, Write);
    procedure Write (To : Stream; Item : PropertyQosPolicy);
    procedure Write (To : Stream; Item : VendorId_Array_T);
    procedure Write (To : Stream; Item : VendorId_T);
@@ -55,21 +55,31 @@ package DDS.JSON_Out_Generic is
    procedure Write (To : Stream; Item : DataRepresentationQosPolicy);
    procedure Write (To : Stream; Item : ParticipantTrustAttributesMask);
    procedure Write (To : Stream; Item : PluginParticipantTrustAttributesMask);
-   procedure Write (To : Stream; Item : ParticipantTrustInfo);
-   procedure Write (To : Stream; Item : TrustInterceptorMask);
-   procedure Write (To : Stream; Item : TrustSignatureMask);
-   procedure Write (To : Stream; Item : TrustSignatureBit);
-   procedure Write (To : Stream; Item : ParticipantTrustSignatureAlgorithms);
-   procedure Write (To : Stream; Item : ParticipantTrustInterceptorAlgorithms);
-   procedure Write (To : Stream; Item : TrustKeyEstablishmentMask);
+
+   procedure Write (To : Stream; Item : EndpointTrustProtectionInfo);
+   procedure Write (To : Stream; Item : TrustAlgorithmRequirements);
+   procedure Write (To : Stream; Item : ParticipantTrustSignatureAlgorithmInfo);
+   procedure Write (To : Stream; Item : ParticipantTrustKeyEstablishmentAlgorithmInfo);
+   procedure Write (To : Stream; Item : ParticipantTrustInterceptorAlgorithmInfo);
+   procedure Write (To : Stream; Item : ParticipantTrustAlgorithmInfo);
+   procedure Write (To : Stream; Item : EndpointTrustInterceptorAlgorithmInfo);
+   procedure Write (To : Stream; Item : EndpointTrustAlgorithmInfo);
+
    procedure Write (To : Stream; Item : GroupDataQosPolicy);
-   procedure Write (To : Stream; Item : TrustKeyEstablishmentBit);
-   procedure Write (To : Stream; Item : ParticipantTrustKeyEstablishmentAlgorithms);
-   procedure Write (To : Stream; Item : ParticipantTrustAlgorithms);
+   --  procedure Write (To : Stream; Item : TrustKeyEstablishmentBit);
+   --  procedure Write (To : Stream; Item : ParticipantTrustKeyEstablishmentAlgorithms);
+   --  procedure Write (To : Stream; Item : ParticipantTrustAlgorithms);
    procedure Write (To : Stream; Item : ContentFilterProperty_T);
    procedure Write is new DDS.TransportInfo_Seq.Write_JSON_Generic (Stream, Write, Write);
    procedure Write (To : Stream; Item : DDS.ParticipantBuiltinTopicData);
    procedure Write (To : Stream; Item : DDS.PublicationBuiltinTopicData);
    procedure Write (To : Stream; Item : DDS.SubscriptionBuiltinTopicData);
+
+   generic
+      type Element_Type is private;
+      type Index_Type is (<>);
+      type Array_Type is array (Index_Type range <>) of Element_Type;
+      with procedure Write (To : Stream; Item : Element_Type);
+   procedure Write_Array_Generic (To : Stream; Item : Array_Type);
 
 end DDS.JSON_Out_Generic;

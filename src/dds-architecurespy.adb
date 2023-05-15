@@ -19,7 +19,7 @@ with GNATCOLL.Opt_Parse;
 with GNATCOLL.JSON;
 
 procedure DDS.Architecurespy is
-   VERSION : constant Standard.String := "1.0.0";
+   VERSION : constant Standard.String := "7.1.0";
    use Ada.Streams.Stream_IO;
    use Ada.Calendar;
 
