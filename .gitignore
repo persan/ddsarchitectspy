@@ -16,3 +16,6 @@ architechure.json
 *.json
 trace
 Makefile.conf
+/*.ads
+/*.adb
+__pycache__
