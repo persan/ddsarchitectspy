@@ -1,6 +1,6 @@
 package body DDS.JSON_Out_Generic is
 
-   procedure Write (To : Stream; Item : DDS.BuiltinTopicKey_T) is
+   procedure Write (To : Stream; Item : DDS.BuiltinTopicKey) is
    begin
       Write (To, "[" & Item.Value (Item.Value'First)'Img & "," &
                Item.Value (Item.Value'First + 1)'Img  & "," &
