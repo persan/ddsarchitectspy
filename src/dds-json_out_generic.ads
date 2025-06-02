@@ -3,7 +3,7 @@ generic
    type Stream is private;
    with procedure Write (To : Stream; Item : Standard.String);
 package DDS.JSON_Out_Generic is
-   procedure Write (To : Stream; Item : DDS.BuiltinTopicKey_T);
+   procedure Write (To : Stream; Item : DDS.BuiltinTopicKey);
    procedure Write (To : Stream; Item : DDS.String);
    procedure Write (To : Stream; Item : DDS.EntityNameQosPolicy);
    procedure Write (To : Stream; Item : Natural);
